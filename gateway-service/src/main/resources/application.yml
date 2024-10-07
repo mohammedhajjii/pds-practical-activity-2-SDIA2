@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: r1
+            uri: lb://customer-service
+            predicates:
+              - Path=/customers/**
+server:
+  port: 8888
