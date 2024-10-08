@@ -1,14 +1,22 @@
 spring:
   application:
     name: gateway-service
+
+  # activate discovery locator functionalities
+  # So it will fetch registered microservice
+  # from eureka server.
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: on
+
+# occupation port:
 server:
   port: 8888
+
+# register to eureka with IP address:
 eureka:
   instance:
     prefer-ip-address: true

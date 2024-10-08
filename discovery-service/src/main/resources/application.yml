@@ -3,8 +3,13 @@ spring:
     name: discovery-service
 eureka:
   client:
+    # prevent server self registration:
     register-with-eureka: false
+    # server does need to pull periodically registered ms:
     fetch-registry: false
 
+# occupation port:
 server:
   port: 8761
+
+

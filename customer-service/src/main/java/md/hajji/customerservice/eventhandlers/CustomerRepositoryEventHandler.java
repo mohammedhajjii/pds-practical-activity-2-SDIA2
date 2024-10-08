@@ -14,8 +14,6 @@ public class CustomerRepositoryEventHandler {
     @HandleBeforeCreate
     public void handleBeforeCreate(Customer customer) {
 
-        System.out.println("handleBeforeCreate started ");
-
         if (customer.getName() == null || customer.getName().isBlank())
             throw new IllegalArgumentException("Customer name cannot be null or empty");
 

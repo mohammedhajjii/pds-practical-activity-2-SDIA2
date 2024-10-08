@@ -23,7 +23,7 @@ public class InventoryServiceApplication {
                     .map(name -> Product.builder()
                             .name(name)
                             .price(1000 + Math.random() * 3000)
-                            .quantity((int) (1 + Math.random() * 10))
+                            .quantity((int) (2 + Math.random() * 10))
                             .build()
                     )
                     .forEach(productRepository::save);

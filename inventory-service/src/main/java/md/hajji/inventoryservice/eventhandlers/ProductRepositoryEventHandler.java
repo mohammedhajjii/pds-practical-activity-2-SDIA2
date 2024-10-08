@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RepositoryEventHandler
-public class ProductEventHandler {
-
+public class ProductRepositoryEventHandler {
 
     @HandleBeforeCreate
     @HandleBeforeSave
