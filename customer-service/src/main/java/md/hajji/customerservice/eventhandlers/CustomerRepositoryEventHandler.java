@@ -2,11 +2,15 @@ package md.hajji.customerservice.eventhandlers;
 
 import md.hajji.customerservice.entitis.Customer;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
+import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.stereotype.Service;
 
-@RepositoryEventHandler()
+@Service
+@RepositoryEventHandler
 public class CustomerRepositoryEventHandler {
 
+    @HandleBeforeSave
     @HandleBeforeCreate
     public void handleBeforeCreate(Customer customer) {
 

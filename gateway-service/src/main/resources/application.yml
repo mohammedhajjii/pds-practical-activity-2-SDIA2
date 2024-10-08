@@ -3,11 +3,12 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: r1
-            uri: lb://customer-service
-            predicates:
-              - Path=/customers/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: on
 server:
   port: 8888
+eureka:
+  instance:
+    prefer-ip-address: true
