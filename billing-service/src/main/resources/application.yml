@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: billing-service
+
+  datasource:
+    url: jdbc:h2:mem:billing-db
+
+  h2:
+    console:
+      enabled: true
+
+  data:
+    rest:
+      detection-strategy: annotated
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+
+server:
+  port: 8083
