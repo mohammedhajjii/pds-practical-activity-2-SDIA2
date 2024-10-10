@@ -117,6 +117,24 @@ eureka:
 
 ```
 
+
+also we need to expose the customer ids, in order to use those ids 
+in `billing-service` microservice for reference a customer, 
+which by default not exposed, for that we can create 
+class configuration that will be implement `RepositoryRestConfigurer` interface, and
+then override a method called `configureRepositoryRestConfiguration`:
+
+```java
+@Configuration
+public class RestRepositoriesConfiguration implements RepositoryRestConfigurer {
+    @Override
+    public void configureRepositoryRestConfiguration(
+            RepositoryRestConfiguration config, CorsRegistry cors) {
+        config.exposeIdsFor(Customer.class);
+    }
+}
+```
+
 #### enroll some customers
 
 ```java
@@ -228,6 +246,21 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
+```
+
+the same thing with `Product` class, we need to expose the ids, 
+for use then externally by `billing-service` for reference a product:
+
+```java
+@Configuration
+public class RestRepositoriesConfiguration implements RepositoryRestConfigurer {
+
+    @Override
+    public void configureRepositoryRestConfiguration(
+            RepositoryRestConfiguration config, CorsRegistry cors) {
+        config.exposeIdsFor(Product.class);
+    }
+}
 ```
 
 #### Save some products
@@ -379,3 +412,157 @@ and the validation layer based on `repository event handler` is present, so
 for example if the product price is `negative` the request will be rejected:
 
 ![create-product-error](./screens/create-product-error.png)
+
+
+## Part-2: Develop billing-service
+
+### Entities
+
+in this microservice, we manipulate two entities:
+- `Bill`:
+```java
+@Entity
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor @Builder
+@ToString
+public class Bill {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private LocalDateTime billingDate;
+    private Long customerId;
+
+    @OneToMany(mappedBy = "bill")
+    private List<ProductItem> productItems;
+}
+```
+
+- `ProductItem` :
+
+```java
+@Entity
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor @Builder
+@ToString
+public class ProductItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private double price;
+    private int quantity;
+    private Long productId;
+    @ManyToOne
+    private Bill bill;
+}
+
+```
+
+### Rest Repositories
+
+#### BillRepository
+
+```java
+@RepositoryRestResource
+public interface BillRepository extends JpaRepository<Bill, Long> {
+}
+
+```
+
+#### ProductItemRepository
+
+```java
+@RepositoryRestResource
+public interface ProductItemRepository extends JpaRepository<ProductItem, Long> {
+}
+
+```
+
+### Models
+
+models are utils, when we need to represent a classes those are manipulate 
+by an external service, for example in this service, we need to get customer details that fetched from
+`customer-service`, so we need a vesel where to put those details, the same thing for products which 
+manipulated by `inventory-service`: 
+
+```java
+public record Customer(
+        Long id,
+        String name,
+        String email
+) {}
+
+```
+
+```java
+public record Product(
+        Long id,
+        String name,
+        double price
+) {}
+
+```
+
+we notice that those object will be immutable, that is why the most appropriate types are  `records`. 
+
+### DTOs (Data Transfer Object)
+
+with `rest repositories` we already can consult the information about `Bills` and `ProductItems`,
+but we don't have access to `customer` or `product` details,
+using DTO we can achieve that, `BillDTO` and `ProductItemDTO` looks like:
+
+```java
+public record BillDTO(
+        Long id,
+        LocalDateTime billingDate,
+        Customer customer,
+        List<ProductItemDTO> productItems
+) {
+}
+```
+
+```java
+public record ProductItemDTO(
+        Long id,
+        double price,
+        int quantity,
+        Product product
+) {}
+```
+
+we notice that those object will be immutable, that is why the most appropriate types are  `records`. 
+
+### Rest clients using openFeign
+
+in order to fetch `customer` and `product` details from 
+`customer-service` and `inventory-service` respectively
+ we use `OpenFeign`:
+
+```java
+@FeignClient(name = "customer-service")
+public interface CustomerRestClient {
+
+    @GetMapping(path = "customers/{id}")
+    Customer getCustomer(@PathVariable  Long id);
+
+    @GetMapping(path = "customers")
+    PagedModel<Customer> getCustomers();
+}
+```
+
+```java
+@FeignClient(name = "inventory-service")
+public interface ProductRestClient {
+
+    @GetMapping(path = "products/{id}")
+    Product getProductById(@PathVariable  Long id);
+
+    @GetMapping(path = "products")
+    PagedModel<Product> getProducts();
+}
+```
+
+we notice that the openFeign should be enabled using `@EnableFeignClients`.
+
+### Mappers
+
+
