@@ -565,4 +565,101 @@ we notice that the openFeign should be enabled using `@EnableFeignClients`.
 
 ### Mappers
 
+for the mapping framework we use `MapStruct`, which easy to use and provide powerfull mapping feature, and can 
+be integrated with `spring` and open for dependency injection.
 
+Here we define two mappers:
+- `ProductItemMapper`:
+```java
+@Mapper(componentModel = "spring", uses = {ProductRestClient.class})
+public interface ProductItemMapper {
+    
+    @Mapping(source = "productId", target = "product")
+    ProductItemDTO mapProductItem(ProductItem productItem);
+}
+
+```
+- `billMapper`:
+```java
+@Mapper(componentModel = "spring",
+        uses = {CustomerRestClient.class, ProductItemMapper.class})
+public interface BillMapper {
+
+ @Mappings({
+         @Mapping(source = "customerId", target = "customer"),
+         @Mapping(source = "productItems", target = "totalPrice")
+ })
+ BillDTO mapBill(final Bill bill);
+
+ /**
+  * calculate the total price of bill:
+  * @param productItems: Product item list
+  * @return totalPrice
+  */
+ default Double calculateTotalPrice(final List<ProductItem> productItems) {
+  return productItems.stream().mapToDouble(ProductItem::getPrice).sum();
+ }
+}
+```
+
+### BillRestController
+
+```java
+@RestController
+@RequestMapping(path = "/bill-details")
+@RequiredArgsConstructor
+public class BillRestController {
+
+    private final BillRepository billRepository;
+    private final BillMapper billMapper;
+
+
+    @GetMapping(path = "{id}")
+    public ResponseEntity<?> getBillById(@PathVariable Long id) {
+
+       try {
+           BillDTO billDTO = billRepository.findById(id)
+                   .map(billMapper::mapBill)
+                   .orElseThrow(() -> new UnresolvedResourceException("bill"));
+
+           return ResponseEntity.ok(billDTO);
+       }catch (Exception exception){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                   .body(exception.getMessage());
+       }
+
+    }
+
+    @GetMapping(path = "of-customer/{id}")
+    public ResponseEntity<?> getBillByCustomerId(@PathVariable Long id) {
+        try {
+            List<BillDTO> billDTOS = billRepository.findByCustomerId(id)
+                    .stream()
+                    .map(billMapper::mapBill)
+                    .toList();
+            return ResponseEntity.ok(billDTOS);
+        }catch (Exception exception){
+            return ResponseEntity.badRequest()
+                    .body(exception.getMessage());
+        }
+    }
+
+}
+
+```
+
+
+## Part-3: Front end with Angular
+
+### Results
+
+![customers](./screens/customers-ng.png)
+
+
+![customer-bills](./screens/bills-by-customer-ng.png)
+
+
+![bill](./screens/bill-ng.png)
+
+
+![products-ng](./screens/product-ng.png)

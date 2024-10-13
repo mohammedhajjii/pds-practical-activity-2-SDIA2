@@ -11,5 +11,4 @@ public interface ProductItemMapper {
 
     @Mapping(source = "productId", target = "product")
     ProductItemDTO mapProductItem(ProductItem productItem);
-
 }

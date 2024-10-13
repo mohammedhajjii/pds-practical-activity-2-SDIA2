@@ -21,7 +21,11 @@ public interface BillMapper {
     })
     BillDTO mapBill(final Bill bill);
 
-
+    /**
+     * calculate the total price of bill:
+     * @param productItems: Product item list
+     * @return totalPrice
+     */
     default Double calculateTotalPrice(final List<ProductItem> productItems) {
         return productItems.stream().mapToDouble(ProductItem::getPrice).sum();
     }
