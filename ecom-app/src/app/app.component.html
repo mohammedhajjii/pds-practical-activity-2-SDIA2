@@ -1,0 +1,25 @@
+<mat-toolbar color="primary">
+  <button
+    mat-raised-button
+    color="primary"
+    [routerLink]="['/customers']"
+  >
+    customers
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [routerLink]="['/products']"
+  >
+    Products
+  </button>
+</mat-toolbar>
+@if (displayProgressBar()){
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+<div class="main-container">
+  <router-outlet>
+
+  </router-outlet>
+</div>
+

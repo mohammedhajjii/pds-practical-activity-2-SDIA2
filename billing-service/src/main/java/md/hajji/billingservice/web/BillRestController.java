@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/bill-details")
 @RequiredArgsConstructor
@@ -35,6 +37,20 @@ public class BillRestController {
                    .body(exception.getMessage());
        }
 
+    }
+
+    @GetMapping(path = "of-customer/{id}")
+    public ResponseEntity<?> getBillByCustomerId(@PathVariable Long id) {
+        try {
+            List<BillDTO> billDTOS = billRepository.findByCustomerId(id)
+                    .stream()
+                    .map(billMapper::mapBill)
+                    .toList();
+            return ResponseEntity.ok(billDTOS);
+        }catch (Exception exception){
+            return ResponseEntity.badRequest()
+                    .body(exception.getMessage());
+        }
     }
 
 }

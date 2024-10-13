@@ -12,6 +12,18 @@ spring:
           enabled: true
           lower-case-service-id: on
 
+      # configure cors:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200/"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+
 # occupation port:
 server:
   port: 8888
@@ -20,3 +32,4 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
+

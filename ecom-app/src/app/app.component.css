@@ -1,0 +1,9 @@
+mat-toolbar{
+  display: flex;
+  gap: 20px;
+}
+.main-container{
+  background-color: whitesmoke;
+  min-height: calc(100vh - 64px);
+  padding: 30px;
+}

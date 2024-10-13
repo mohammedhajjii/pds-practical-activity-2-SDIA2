@@ -1,0 +1,92 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        Bill preview
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <div class="field">
+        <div>ID</div>
+        <div> {{bill().id}}</div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="field">
+        <div>Date</div>
+        <div> {{bill().billingDate | date}}</div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="field">
+        <div>Total price</div>
+        <div> {{bill().totalPrice | number:'1.2-4' }}</div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="field">
+        <div>Customer ID</div>
+        <div> {{bill().customer?.id}}</div>
+      </div>
+      <mat-divider></mat-divider>
+
+      <div class="field">
+        <div>Customer Name</div>
+        <div> {{bill().customer?.name}}</div>
+      </div>
+      <mat-divider></mat-divider>
+
+      <div class="field">
+        <div>Customer Email</div>
+        <div> {{bill().customer?.email}}</div>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        Product items
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+
+
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="ID">
+          <th mat-header-cell *matHeaderCellDef>Item ID</th>
+          <td mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="Name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{element.product.name}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="UnitPrice">
+          <th mat-header-cell *matHeaderCellDef>Unit Price</th>
+          <td mat-cell *matCellDef="let item">{{item.product.price | number:'1.2-4'}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="Quantity">
+          <th mat-header-cell *matHeaderCellDef>Quantity</th>
+          <td mat-cell *matCellDef="let item">{{item.quantity}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="Price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let item">{{item.price | number:'1.2-4'}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+    </mat-card-content>
+
+
+    <mat-card-footer>
+      Total: {{bill().productItems?.length}} Items
+    </mat-card-footer>
+  </mat-card>
+</div>

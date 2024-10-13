@@ -9,6 +9,7 @@ public record BillDTO(
         Long id,
         LocalDateTime billingDate,
         Customer customer,
-        List<ProductItemDTO> productItems
+        List<ProductItemDTO> productItems,
+        Double totalPrice
 ) {
 }

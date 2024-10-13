@@ -1,0 +1,18 @@
+.container{
+  display: grid;
+  grid-template-columns: 35% auto;
+  column-gap: 30px;
+}
+
+.field{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 50px;
+  font-size: 17px;
+}
+
+mat-card-footer{
+  display: grid;
+  place-items: center;
+}
